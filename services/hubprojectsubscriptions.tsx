@@ -7,6 +7,7 @@ import { HubProject } from "./hubprojects";
 
 export interface HubProjectSubscription {
     id: number;
+    code: string;
     project: string;
     service: string;
     is_active: boolean;

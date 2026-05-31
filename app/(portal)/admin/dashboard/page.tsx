@@ -1,16 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useFetchClients } from "@/hooks/accounts/actions";
 import { useFetchHubs } from "@/hooks/hubs/actions";
 import { useFetchHubServices } from "@/hooks/hubservices/actions";
-import { Users, Server, Activity, ArrowRight, Loader2, Database, ShieldCheck } from "lucide-react";
+import { Users, Server, Activity, ArrowRight, Loader2, Database, Plus } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { SlideOver } from "@/components/portal/SlideOver";
+import CreateHubServiceForm from "@/forms/hubservices/CreateHubService";
+import CreateHubProjectForm from "@/forms/hubprojects/CreateHubProject";
 
 export default function AdminDashboard() {
   const { data: clients, isLoading: loadingClients } = useFetchClients();
   const { data: hubs, isLoading: loadingHubs } = useFetchHubs();
   const { data: services, isLoading: loadingServices } = useFetchHubServices();
+
+  const [isServiceSliderOpen, setIsServiceSliderOpen] = useState(false);
+  const [isProjectSliderOpen, setIsProjectSliderOpen] = useState(false);
 
   const totalClients = clients?.length || 0;
   const totalHubs = hubs?.length || 0;
@@ -86,9 +93,11 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[500px]">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
             <h2 className="text-lg font-semibold text-slate-900">Recent Clients</h2>
-            <Link href="/admin/clients" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="flex items-center gap-4">
+              <Link href="/admin/clients" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
           <div className="p-0 overflow-y-auto flex-grow bg-slate-50/50">
             {loadingClients ? (
@@ -127,9 +136,14 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[500px]">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
             <h2 className="text-lg font-semibold text-slate-900">Infrastructure Hubs</h2>
-            <Link href="/admin/hubs" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-              Manage <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="flex items-center gap-4">
+              <button onClick={() => setIsProjectSliderOpen(true)} className="text-sm bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1 transition-colors">
+                <Plus className="w-4 h-4" /> New Project
+              </button>
+              <Link href="/admin/hubs" className="text-sm text-slate-600 hover:text-slate-900 font-medium flex items-center gap-1">
+                Manage Hubs <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
           <div className="p-0 overflow-y-auto flex-grow bg-slate-50/50">
             {loadingHubs ? (
@@ -173,9 +187,14 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[500px] lg:col-span-2">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
             <h2 className="text-lg font-semibold text-slate-900">Available Services</h2>
-            <Link href="/admin/hubservices" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
-              All Services <ArrowRight className="w-4 h-4" />
-            </Link>
+            <div className="flex items-center gap-4">
+              <button onClick={() => setIsServiceSliderOpen(true)} className="text-sm bg-blue-600 text-white hover:bg-blue-700 px-3 py-1.5 rounded-lg font-medium flex items-center gap-1 transition-colors">
+                <Plus className="w-4 h-4" /> New Service
+              </button>
+              <Link href="/admin/hubservices" className="text-sm text-slate-600 hover:text-slate-900 font-medium flex items-center gap-1">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
           <div className="p-6 overflow-y-auto flex-grow bg-slate-50/50">
             {loadingServices ? (
@@ -217,6 +236,30 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      <SlideOver
+        isOpen={isServiceSliderOpen}
+        onClose={() => setIsServiceSliderOpen(false)}
+        title="Create New Service"
+        description="Add a new service offering to the Global Hub."
+      >
+        <CreateHubServiceForm 
+          onSuccess={() => setIsServiceSliderOpen(false)} 
+          onCancel={() => setIsServiceSliderOpen(false)} 
+        />
+      </SlideOver>
+
+      <SlideOver
+        isOpen={isProjectSliderOpen}
+        onClose={() => setIsProjectSliderOpen(false)}
+        title="Create New Project"
+        description="Initialize a new client infrastructure project."
+      >
+        <CreateHubProjectForm 
+          onSuccess={() => setIsProjectSliderOpen(false)} 
+          onCancel={() => setIsProjectSliderOpen(false)} 
+        />
+      </SlideOver>
     </div>
   );
 }
