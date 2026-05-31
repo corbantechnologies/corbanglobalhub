@@ -1,6 +1,5 @@
 import * as Yup from "yup";
 
-
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
   password: Yup.string()
@@ -170,6 +169,23 @@ const ActivateAccountSchema = Yup.object().shape({
     .oneOf([Yup.ref("password")], "Passwords must match"),
 });
 
+const ClientSignupSchema = Yup.object().shape({
+  first_name: Yup.string().required("First name is required"),
+  last_name: Yup.string().required("Last name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  country: Yup.string().required("Country is required"),
+  password: Yup.string()
+    .min(8, "Password cannot be less than 8 characters")
+    .required("Password is required")
+    .matches(
+      /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
+      "Password must contain at least 8 characters, one uppercase, one number and one special case character"
+    ),
+  password_confirmation: Yup.string()
+    .required("Password Confirmation is required")
+    .oneOf([Yup.ref("password")], "Passwords must match"),
+});
+
 export {
   LoginSchema,
   ResetPasswordSchema,
@@ -184,4 +200,5 @@ export {
   JournalEntrySchema,
   CreateMemberSchema,
   ActivateAccountSchema,
+  ClientSignupSchema,
 };
