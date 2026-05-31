@@ -105,7 +105,9 @@ export default function HubDetailPage({ params }: { params: Promise<{ hub_refere
                   <div className="p-6 border-b border-slate-100 bg-slate-50/50 flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold text-slate-900">{project.name}</h3>
+                        <Link href={`/admin/hubs/${hub.reference}/${project.reference}`} className="text-lg font-semibold text-slate-900 hover:text-blue-600 transition-colors">
+                          {project.name}
+                        </Link>
                         {!project.is_active && (
                           <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded bg-slate-200 text-slate-600">Archived</span>
                         )}
