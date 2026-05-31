@@ -80,7 +80,7 @@ export default function Login() {
               name="email"
               type="email"
               required
-              placeholder="corbantechnologies@gmail.com"
+              placeholder="johndoe@gmail.com"
               value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}

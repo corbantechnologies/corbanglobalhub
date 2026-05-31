@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import Link from "next/link";
@@ -7,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { useFetchAccount } from "@/hooks/accounts/actions";
-import { useFetchFinancialYears } from "@/hooks/financialyears/actions";
 import {
   LogOut,
   LayoutDashboard,
@@ -17,7 +15,7 @@ import {
   X,
   ChevronRight,
   User,
-  Settings,
+  Server,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -26,117 +24,56 @@ export default function Navbar() {
   const { data: account, isLoading } = useFetchAccount();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const isDirector = account?.is_director;
-  const isFinance = account?.is_finance;
-  const isOperations = account?.is_operations;
-  const isEmployee = account?.is_employee;
-
-  const rolePrefix = isDirector
-    ? "director"
-    : isFinance
-      ? "finance"
-      : isOperations
-        ? "operations"
-        : isEmployee
-          ? "employee"
-          : "portal";
+  const isSuperuser = account?.is_superuser;
+  const isClient = account?.is_client;
 
   // Close menu on navigation
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
 
-  const { data: years } = useFetchFinancialYears();
-  const activeYear = years?.find(
-    (y: { is_active: boolean; reference: string }) => y.is_active,
-  );
-
   const navItems = [
     {
       name: "Dashboard",
-      href: `/${rolePrefix}/dashboard`,
+      href: isSuperuser ? "/admin/dashboard" : "/dashboard",
       icon: LayoutDashboard,
-      show: isDirector || isFinance || isOperations,
+      show: isSuperuser || isClient,
     },
     {
-      name: "Reports",
-      href: `/${rolePrefix}/reports`,
-      icon: FileText,
-      show: isDirector || isFinance || isOperations,
+      name: "Clients",
+      href: "/admin/clients",
+      icon: User,
+      show: isSuperuser,
     },
     {
-      name: "General Ledger",
-      href: `/${rolePrefix}/gl-statement`,
-      icon: FileText,
-      show: isFinance,
+      name: "Hubs",
+      href: "/admin/hubs",
+      icon: Server,
+      show: isSuperuser,
     },
     {
-      name: "Divisions",
-      href: `/${rolePrefix}/divisions`,
+      name: "Services",
+      href: "/admin/services",
       icon: Database,
-      show: isDirector || isOperations,
+      show: isSuperuser,
     },
     {
-      name: "Leads",
-      href: `/${rolePrefix}/leads`,
+      name: "My Hubs",
+      href: "/hubs",
+      icon: Server,
+      show: isClient,
+    },
+    {
+      name: "Subscriptions",
+      href: "/subscriptions",
+      icon: FileText,
+      show: isClient,
+    },
+    {
+      name: "Available Services",
+      href: "/services",
       icon: Database,
-      show: isDirector || isOperations,
-    },
-    {
-      name: "COA",
-      href: `/${rolePrefix}/coa`,
-      icon: FileText,
-      show: isDirector || isFinance || isOperations,
-    },
-    {
-      name: "Books",
-      href: `/${rolePrefix}/books`,
-      icon: FileText,
-      show: isFinance,
-    },
-    {
-      name: "Quotations",
-      href: `/${rolePrefix}/quotations`,
-      icon: FileText,
-      show: isDirector || isOperations,
-    },
-    {
-      name: "Invoices",
-      href: `/${rolePrefix}/invoices`,
-      icon: FileText,
-      show: isDirector || isFinance || isOperations,
-    },
-    {
-      name: "Receipts",
-      href: `/${rolePrefix}/receipts`,
-      icon: FileText,
-      show: isDirector || isFinance || isOperations,
-    },
-    {
-      name: "Fiscal Year",
-      href: activeYear
-        ? `/${rolePrefix}/fiscal-years/${activeYear.reference}`
-        : `/${rolePrefix}/fiscal-years`,
-      icon: FileText,
-      show: isDirector || isFinance,
-    },
-    {
-      name: "Ledger",
-      href: `/${rolePrefix}/journal-entries`,
-      icon: FileText,
-      show: isDirector || isFinance,
-    },
-    {
-      name: "Partners",
-      href: `/${rolePrefix}/partners`,
-      icon: FileText,
-      show: isDirector || isFinance || isOperations,
-    },
-    {
-      name: "Financials",
-      href: `/${rolePrefix}/financials`,
-      icon: FileText,
-      show: isDirector,
+      show: isClient,
     },
   ];
 
@@ -164,19 +101,17 @@ export default function Navbar() {
               <span className="text-sm text-white leading-none">
                 {isLoading
                   ? "Loading..."
-                  : `${account?.first_name} ${account?.last_name}`}
+                  : `${account?.first_name || ""} ${account?.last_name || ""}`}
               </span>
               <span className={cn(
                 "text-[10px] uppercase mt-1.5 px-3 py-1 rounded border shadow-sm",
-                isDirector
-                  ? "text-corporate-primary bg-corporate-primary/5 border-corporate-primary/20 shadow-corporate-primary/5"
-                  : isFinance
+                isSuperuser
+                  ? "text-blue-500 bg-blue-500/5 border-blue-500/20 shadow-blue-500/5"
+                  : isClient
                     ? "text-emerald-500 bg-emerald-500/5 border-emerald-500/20 shadow-emerald-500/5"
-                    : isOperations
-                      ? "text-blue-500 bg-blue-500/5 border-blue-500/20 shadow-blue-500/5"
-                      : "text-slate-400 bg-slate-800 border-slate-700"
+                    : "text-slate-400 bg-slate-800 border-slate-700"
               )}>
-                {isDirector ? "Executive Director" : isFinance ? "Finance Controller" : isOperations ? "Operations Officer" : "Portal User"}
+                {isSuperuser ? "Administrator" : isClient ? "Corporate Client" : "Portal User"}
               </span>
             </div>
 
@@ -231,14 +166,14 @@ export default function Navbar() {
             <div className="flex items-center gap-5">
               <div className={cn(
                 "w-8 h-8 rounded flex items-center justify-center text-white text-sm border shadow transition-transform hover:scale-105",
-                isDirector
-                  ? "bg-corporate-primary border-corporate-primary/20 shadow-corporate-primary/10"
-                  : isFinance
+                isSuperuser
+                  ? "bg-blue-600 border-blue-600/20 shadow-blue-600/10"
+                  : isClient
                     ? "bg-emerald-600 border-emerald-600/20 shadow-emerald-600/10"
                     : "bg-slate-800 border-slate-700"
               )}>
-                {account?.first_name?.[0]}
-                {account?.last_name?.[0]}
+                {account?.first_name?.[0] || "?"}
+                {account?.last_name?.[0] || "?"}
               </div>
               <div>
                 <p className="text-white text-xl tracking-tight">
@@ -247,26 +182,19 @@ export default function Navbar() {
                 <div className="flex flex-wrap gap-2 mt-2">
                   <div className={cn(
                     "inline-flex items-center px-2 py-1 rounded border",
-                    isDirector
-                      ? "bg-corporate-primary/10 border-corporate-primary/20"
-                      : isFinance
+                    isSuperuser
+                      ? "bg-blue-500/10 border-blue-500/20"
+                      : isClient
                         ? "bg-emerald-500/10 border-emerald-500/20"
                         : "bg-slate-800 border-slate-700"
                   )}>
                     <span className={cn(
                       "text-[9px] font-semibold uppercase",
-                      isDirector ? "text-corporate-primary" : isFinance ? "text-emerald-500" : "text-slate-400"
+                      isSuperuser ? "text-blue-500" : isClient ? "text-emerald-500" : "text-slate-400"
                     )}>
-                      {isDirector ? "Executive Director" : isFinance ? "Finance Controller" : "Portal User"}
+                      {isSuperuser ? "Administrator" : isClient ? "Corporate Client" : "Portal User"}
                     </span>
                   </div>
-                  {activeYear && (
-                    <div className="inline-flex items-center px-2 py-1 rounded border bg-slate-800 border-slate-700 shadow-inner">
-                      <span className="text-[9px] font-semibold uppercase text-slate-400">
-                        FY: {activeYear.code}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -277,7 +205,7 @@ export default function Navbar() {
             {navItems
               .filter((item) => item.show)
               .map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                 return (
                   <Link
                     key={item.name}
@@ -294,8 +222,8 @@ export default function Navbar() {
                         className={cn(
                           "w-8 h-8 rounded flex items-center justify-center transition-all group-hover:scale-110 shadow-lg",
                           isActive
-                            ? isDirector
-                              ? "bg-corporate-primary text-white shadow-corporate-primary/20"
+                            ? isSuperuser
+                              ? "bg-blue-600 text-white shadow-blue-600/20"
                               : "bg-emerald-600 text-white shadow-emerald-600/20"
                             : "bg-slate-800/80 text-slate-600 group-hover:text-white shadow-black/5",
                         )}
@@ -307,7 +235,7 @@ export default function Navbar() {
                     <ChevronRight
                       className={cn(
                         "w-5 h-5 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1",
-                        isActive && (isDirector ? "text-corporate-primary opacity-100" : "text-emerald-500 opacity-100"),
+                        isActive && (isSuperuser ? "text-blue-500 opacity-100" : "text-emerald-500 opacity-100"),
                       )}
                     />
                   </Link>
