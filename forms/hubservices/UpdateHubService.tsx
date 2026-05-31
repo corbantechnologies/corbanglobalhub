@@ -137,8 +137,8 @@ export default function UpdateHubServiceForm({ service, onSuccess, onCancel }: U
               formik.touched.currency && formik.errors.currency && "border-red-500 bg-red-50"
             )}
           >
-            <option value="USD">USD ($)</option>
             <option value="KES">KES</option>
+            <option value="USD">USD ($)</option>
             <option value="GBP">GBP (£)</option>
             <option value="EUR">EUR (€)</option>
           </select>

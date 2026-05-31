@@ -58,7 +58,7 @@ export default function CreateHubServiceForm({ onSuccess, onCancel }: CreateHubS
       name: "",
       description: "",
       base_price: 0,
-      currency: "USD",
+      currency: "KES",
       is_active: true,
       image: null as File | null,
     },
@@ -141,8 +141,8 @@ export default function CreateHubServiceForm({ onSuccess, onCancel }: CreateHubS
               formik.touched.currency && formik.errors.currency && "border-red-500 bg-red-50"
             )}
           >
-            <option value="USD">USD ($)</option>
             <option value="KES">KES</option>
+            <option value="USD">USD ($)</option>
             <option value="GBP">GBP (£)</option>
             <option value="EUR">EUR (€)</option>
           </select>
