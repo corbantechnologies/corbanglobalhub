@@ -3,6 +3,7 @@
 
 import { apiActions } from "@/tools/axios";
 import { AxiosResponse } from "axios";
+import { PaginatedResponse } from "./general";
 
 export interface User {
   member_code: string;
@@ -131,4 +132,14 @@ export const createClient = async (data: createClient): Promise<User> => {
     data,
   );
   return response.data;
+};
+
+export const getClients = async (
+  headers: { headers: { Authorization: string } }
+): Promise<User[]> => {
+  const response: AxiosResponse<PaginatedResponse<User>> = await apiActions.get(
+    `/api/v1/auth/clients/all/`,
+    headers
+  );
+  return response.data.results || [];
 };
