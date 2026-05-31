@@ -8,16 +8,14 @@ import Link from "next/link";
 import { Session, User } from "next-auth";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { useFormik } from "formik";
-import { LoginSchema } from "@/validation";
 import { cn } from "@/lib/utils";
+import { LoginSchema } from "@/validation";
 
 interface CustomUser extends User {
-  is_director?: boolean;
-  is_employee?: boolean;
-  is_finance?: boolean;
   is_operations?: boolean;
   is_sales?: boolean;
   is_superuser?: boolean;
+  is_client?: boolean;
 }
 
 interface CustomSession extends Session {
@@ -54,16 +52,10 @@ export default function Login() {
       } else {
         toast.success("Identity verified. Accessing portal...");
 
-        if (session?.user?.is_director === true) {
-          router.push("/director/dashboard");
-        } else if (session?.user?.is_employee === true) {
-          router.push("/employee/dashboard");
-        } else if (session?.user?.is_finance === true) {
-          router.push("/finance/dashboard");
-        } else if (session?.user?.is_operations === true) {
-          router.push("/operations/dashboard");
+        if (session?.user?.is_client === true) {
+          router.push("/dashboard");
         } else if (session?.user?.is_superuser === true) {
-          router.push("/director/dashboard");
+          router.push("/admin/dashboard");
         } else {
           router.push("/");
         }
