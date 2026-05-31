@@ -86,7 +86,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[500px]">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
             <h2 className="text-lg font-semibold text-slate-900">Recent Clients</h2>
-            <Link href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 opacity-50 cursor-not-allowed">
+            <Link href="/admin/clients" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
               View All <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -127,7 +127,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[500px]">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
             <h2 className="text-lg font-semibold text-slate-900">Infrastructure Hubs</h2>
-            <Link href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 opacity-50 cursor-not-allowed">
+            <Link href="/admin/hubs" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
               Manage <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -173,7 +173,7 @@ export default function AdminDashboard() {
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col h-[500px] lg:col-span-2">
           <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-white">
             <h2 className="text-lg font-semibold text-slate-900">Available Services</h2>
-            <Link href="#" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1 opacity-50 cursor-not-allowed">
+            <Link href="/admin/hubservices" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
               All Services <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
