@@ -160,15 +160,15 @@ export default function AdminDashboard() {
                 {hubs?.slice(0, 5).map((hub, i) => (
                   <div key={i} className="p-4 hover:bg-white transition-colors flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-slate-900 flex items-center gap-2">
+                      <Link href={`/admin/hubs/${hub.reference}`} className="font-medium text-slate-900 flex items-center gap-2 hover:text-blue-600 transition-colors">
                         {hub.name}
                         {hub.is_active ? (
                           <span className="w-2 h-2 rounded-full bg-emerald-500" title="Active"></span>
                         ) : (
                           <span className="w-2 h-2 rounded-full bg-slate-300" title="Inactive"></span>
                         )}
-                      </p>
-                      <p className="text-sm text-slate-500">{hub.code} • {hub.country}</p>
+                      </Link>
+                      <p className="text-sm text-slate-500 mt-1">{hub.code} • {hub.country}</p>
                     </div>
                     <span className={cn(
                       "text-xs font-medium px-2.5 py-1 rounded-full border",

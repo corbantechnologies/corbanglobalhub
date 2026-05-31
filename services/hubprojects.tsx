@@ -3,6 +3,7 @@
 import { apiActions } from "@/tools/axios";
 import { AxiosResponse } from "axios";
 import { PaginatedResponse } from "./general";
+import { HubProjectSubscription } from "./hubprojectsubscriptions";
 
 export interface HubProject {
     name: string;
@@ -16,6 +17,7 @@ export interface HubProject {
     created_at: string;
     updated_at: string;
     reference: string;
+    subscriptions: HubProjectSubscription[]
 }
 
 interface createHubProject {

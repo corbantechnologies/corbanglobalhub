@@ -5,8 +5,9 @@ import { useFetchHubs } from "@/hooks/hubs/actions";
 import { SlideOver } from "@/components/portal/SlideOver";
 import UpdateHubForm from "@/forms/hubs/UpdateHub";
 import { Hub } from "@/services/hubs";
-import { Search, Edit2, Loader2, Server } from "lucide-react";
+import { Search, Edit2, Loader2, Server, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 export default function HubsPage() {
   const { data: hubs, isLoading } = useFetchHubs();
@@ -92,12 +93,22 @@ export default function HubsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={() => setEditingHub(hub)}
-                        className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
+                      <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+                        <Link
+                          href={`/admin/hubs/${hub.reference}`}
+                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="View Hub Details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Link>
+                        <button
+                          onClick={() => setEditingHub(hub)}
+                          className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title="Edit Hub"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
