@@ -1,6 +1,5 @@
 import * as Yup from "yup";
 
-
 const LoginSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Required"),
   password: Yup.string()
@@ -170,6 +169,54 @@ const ActivateAccountSchema = Yup.object().shape({
     .oneOf([Yup.ref("password")], "Passwords must match"),
 });
 
+const ClientSignupSchema = Yup.object().shape({
+  first_name: Yup.string().required("First name is required"),
+  last_name: Yup.string().required("Last name is required"),
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  country: Yup.string().required("Country is required"),
+  password: Yup.string()
+    .min(8, "Password cannot be less than 8 characters")
+    .required("Password is required")
+    .matches(
+      /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
+      "Password must contain at least 8 characters, one uppercase, one number and one special case character"
+    ),
+  password_confirmation: Yup.string()
+    .required("Password Confirmation is required")
+    .oneOf([Yup.ref("password")], "Passwords must match"),
+});
+
+const UpdateHubSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  is_active: Yup.boolean().default(true),
+  tax_pin: Yup.string(),
+  billing_address: Yup.string(),
+  billing_email: Yup.string().email("Invalid email"),
+  requires_kra_invoice: Yup.boolean().default(false),
+});
+
+const HubServiceSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  description: Yup.string().required("Description is required"),
+  base_price: Yup.number().required("Base price is required").min(0, "Base price must be positive"),
+  currency: Yup.string().required("Currency is required"),
+  is_active: Yup.boolean().default(true),
+});
+
+const HubProjectSchema = Yup.object().shape({
+  name: Yup.string().required("Name is required"),
+  description: Yup.string().required("Description is required"),
+  is_active: Yup.boolean().default(true),
+  hub: Yup.string().required("Hub is required"),
+});
+
+const HubProjectSubscriptionSchema = Yup.object().shape({
+  project: Yup.string().required("Project is required"),
+  service: Yup.string().required("Service is required"),
+  is_active: Yup.boolean().default(true),
+  custom_price: Yup.number().min(0, "Custom price must be positive"),
+});
+
 export {
   LoginSchema,
   ResetPasswordSchema,
@@ -184,4 +231,9 @@ export {
   JournalEntrySchema,
   CreateMemberSchema,
   ActivateAccountSchema,
+  ClientSignupSchema,
+  UpdateHubSchema,
+  HubServiceSchema,
+  HubProjectSchema,
+  HubProjectSubscriptionSchema,
 };

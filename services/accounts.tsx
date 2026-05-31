@@ -3,6 +3,7 @@
 
 import { apiActions } from "@/tools/axios";
 import { AxiosResponse } from "axios";
+import { PaginatedResponse } from "./general";
 
 export interface User {
   member_code: string;
@@ -28,12 +29,22 @@ export interface User {
   is_operations: boolean;
   is_superuser: boolean;
   is_staff: boolean;
+  is_client: boolean;
 }
 
 export interface createMember {
   email: string;
   first_name: string;
   last_name: string;
+}
+
+export interface createClient {
+  email: string;
+  first_name: string;
+  last_name: string;
+  password: string;
+  password_confirmation: string;
+  country: string;
 }
 
 export interface activateAccount {
@@ -112,4 +123,23 @@ export const activateAccount = async (data: activateAccount): Promise<User> => {
     data,
   );
   return response.data;
+};
+
+// Client Accounts
+export const createClient = async (data: createClient): Promise<User> => {
+  const response: AxiosResponse<User> = await apiActions.post(
+    `/api/v1/auth/signup/client/`,
+    data,
+  );
+  return response.data;
+};
+
+export const getClients = async (
+  headers: { headers: { Authorization: string } }
+): Promise<User[]> => {
+  const response: AxiosResponse<PaginatedResponse<User>> = await apiActions.get(
+    `/api/v1/auth/clients/all/`,
+    headers
+  );
+  return response.data.results || [];
 };
