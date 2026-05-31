@@ -30,6 +30,15 @@ interface createHub {
     requires_kra_invoice: boolean;
 }
 
+interface updateHub {
+    name?: string;
+    is_active?: boolean;
+    tax_pin?: string;
+    billing_address?: string;
+    billing_email?: string;
+    requires_kra_invoice?: boolean;
+}
+
 export const getHubs = async (headers: { headers: { Authorization: string } }): Promise<Hub[]> => {
     const response: AxiosResponse<PaginatedResponse<Hub>> = await apiActions.get(`/api/v1/hubs/`, headers);
     return response.data.results || [];
@@ -45,7 +54,7 @@ export const createHub = async (data: createHub, headers: { headers: { Authoriza
     return response.data;
 };
 
-export const updateHub = async (reference: string, data: createHub, headers: { headers: { Authorization: string } }): Promise<Hub> => {
+export const updateHub = async (reference: string, data: updateHub, headers: { headers: { Authorization: string } }): Promise<Hub> => {
     const response: AxiosResponse<Hub> = await apiActions.patch(`/api/v1/hubs/${reference}/`, data, headers);
     return response.data;
 };

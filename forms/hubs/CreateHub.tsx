@@ -1,0 +1,1 @@
+// create new hub: rarely used as a hub is created by default when client creates an account

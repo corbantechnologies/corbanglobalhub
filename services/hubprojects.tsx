@@ -22,7 +22,7 @@ interface createHubProject {
     name: string;
     description: string;
     is_active: boolean;
-    hub: string;
+    hub: string; // hub code
 }
 
 interface updateHubProject {

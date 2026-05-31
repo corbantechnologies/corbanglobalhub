@@ -18,15 +18,15 @@ export interface HubProjectSubscription {
 
 
 interface createHubProjectSubscription {
-    project: string;
-    service: string;
+    project: string; // project code
+    service: string; // service code
     is_active: boolean;
     custom_price: string;
 }
 
 interface updateHubProjectSubscription {
-    project?: string;
-    service?: string;
+    project?: string; // project code
+    service?: string; // service code
     is_active?: boolean;
     custom_price?: string;
 }
