@@ -29,6 +29,8 @@ export default function CreateHubProjectForm({ onSuccess, onCancel, preselectedH
     onSuccess: () => {
       toast.success("Project created successfully");
       queryClient.invalidateQueries({ queryKey: ["hubprojects"] });
+      queryClient.invalidateQueries({ queryKey: ["hub"] });
+      queryClient.invalidateQueries({ queryKey: ["hubs"] });
       onSuccess();
     },
     onError: (error: any) => {

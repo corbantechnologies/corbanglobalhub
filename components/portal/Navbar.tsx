@@ -53,7 +53,7 @@ export default function Navbar() {
     },
     {
       name: "Services",
-      href: "/admin/services",
+      href: "/admin/hubservices",
       icon: Database,
       show: isSuperuser,
     },
@@ -71,7 +71,7 @@ export default function Navbar() {
     },
     {
       name: "Available Services",
-      href: "/services",
+      href: "/hubservices",
       icon: Database,
       show: isClient,
     },

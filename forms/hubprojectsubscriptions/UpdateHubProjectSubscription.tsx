@@ -31,6 +31,10 @@ export default function UpdateHubProjectSubscriptionForm({ subscription, onSucce
     onSuccess: () => {
       toast.success("Subscription updated successfully");
       queryClient.invalidateQueries({ queryKey: ["hubprojectsubscriptions"] });
+      queryClient.invalidateQueries({ queryKey: ["hubproject"] });
+      queryClient.invalidateQueries({ queryKey: ["hubprojects"] });
+      queryClient.invalidateQueries({ queryKey: ["hub"] });
+      queryClient.invalidateQueries({ queryKey: ["hubs"] });
       onSuccess();
     },
     onError: (error: any) => {

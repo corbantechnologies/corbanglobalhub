@@ -29,6 +29,9 @@ export default function UpdateHubProjectForm({ project, onSuccess, onCancel }: U
     onSuccess: () => {
       toast.success("Project updated successfully");
       queryClient.invalidateQueries({ queryKey: ["hubprojects"] });
+      queryClient.invalidateQueries({ queryKey: ["hubproject"] });
+      queryClient.invalidateQueries({ queryKey: ["hub"] });
+      queryClient.invalidateQueries({ queryKey: ["hubs"] });
       onSuccess();
     },
     onError: (error: any) => {
