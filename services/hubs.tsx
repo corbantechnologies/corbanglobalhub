@@ -4,6 +4,7 @@ import { apiActions } from "@/tools/axios";
 import { AxiosResponse } from "axios";
 import { PaginatedResponse } from "./general";
 import { HubProject } from "./hubprojects";
+import { HubBillingInvoice } from "./hubbillinginvoices";
 
 export interface Hub {
     name: string;
@@ -19,7 +20,8 @@ export interface Hub {
     created_at: string;
     updated_at: string;
     reference: string;
-    hubprojects: HubProject[]
+    hubprojects: HubProject[];
+    hub_invoices: HubBillingInvoice[];
 }
 
 interface createHub {
