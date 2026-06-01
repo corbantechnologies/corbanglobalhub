@@ -70,12 +70,6 @@ export default function Navbar() {
       show: isClient,
     },
     {
-      name: "Subscriptions",
-      href: "/subscriptions",
-      icon: FileText,
-      show: isClient,
-    },
-    {
       name: "Available Services",
       href: "/hubservices",
       icon: Database,
