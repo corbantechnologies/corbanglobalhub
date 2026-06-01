@@ -52,6 +52,12 @@ export default function Navbar() {
       show: isSuperuser,
     },
     {
+      name: "Billings",
+      href: "/admin/hubbillinginvoices",
+      icon: FileText,
+      show: isSuperuser,
+    },
+    {
       name: "Services",
       href: "/admin/hubservices",
       icon: Database,
@@ -73,6 +79,12 @@ export default function Navbar() {
       name: "Available Services",
       href: "/hubservices",
       icon: Database,
+      show: isClient,
+    },
+    {
+      name: "Hub Billing Invoices",
+      href: "/billing",
+      icon: FileText,
       show: isClient,
     },
   ];
