@@ -2,7 +2,7 @@
 
 import { useFetchHubProject } from "@/hooks/hubprojects/actions";
 import { useFetchHubServices } from "@/hooks/hubservices/actions";
-import { ArrowLeft, Loader2, FolderKanban, Activity, Link as LinkIcon, DollarSign, Plus, Search, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, Loader2, FolderKanban, Activity, Link as LinkIcon, Plus, Search, CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { use, useState } from "react";
@@ -150,7 +150,7 @@ export default function HubProjectDetailPage({ params }: { params: Promise<{ hub
                           <div className="flex flex-col items-end">
                             <span className="font-semibold text-slate-900 flex items-center gap-1 text-base">
                               {hasCustomPrice ? (
-                                <><DollarSign className="w-4 h-4 text-slate-400" /> {sub.custom_price}</>
+                                <>{fullService ? fullService.currency : ""} {sub.custom_price}</>
                               ) : (
                                 fullService ? `${fullService.currency} ${fullService.base_price}` : "Standard"
                               )}

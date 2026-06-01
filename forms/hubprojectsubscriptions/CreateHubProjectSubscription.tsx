@@ -35,6 +35,7 @@ export default function CreateHubProjectSubscriptionForm({ onSuccess, onCancel, 
       queryClient.invalidateQueries({ queryKey: ["hubprojects"] });
       queryClient.invalidateQueries({ queryKey: ["hub"] });
       queryClient.invalidateQueries({ queryKey: ["hubs"] });
+      formik.resetForm();
       onSuccess();
     },
     onError: (error: any) => {
