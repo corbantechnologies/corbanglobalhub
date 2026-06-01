@@ -51,7 +51,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
   };
 
   return (
-    <div className="p-6 md:p-10 space-y-8 mx-auto max-w-5xl">
+    <div className="p-6 md:p-10 space-y-8 mx-auto">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
         <div className="flex items-center gap-4">
@@ -214,7 +214,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
 
         {/* KRA Details & Footer */}
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 pt-6 border-t border-slate-100">
-          <div className="space-y-4 max-w-md">
+          <div className="space-y-4 flex-1 w-full max-w-2xl">
             <div>
               <h4 className="text-sm font-semibold text-slate-900 mb-2">Payment Status</h4>
               <div className="flex items-center gap-2">
@@ -255,7 +255,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
                           <div className="text-slate-600 text-xs space-y-1">
                             <p className="flex items-center gap-1.5"><Smartphone className="w-3.5 h-3.5 text-emerald-500" /> M-PESA Paybill</p>
                             <p>Paybill Number: <span className="font-mono font-medium text-slate-900">{acc.paybill}</span></p>
-                            <p>Account Number: <span className="font-mono font-medium text-slate-900">{acc.account}</span></p>
+                            <p>Account Number: <span className="font-mono font-medium text-slate-900">{invoice.code}</span></p>
                           </div>
                         ) : null}
                         {acc.instructions && (
