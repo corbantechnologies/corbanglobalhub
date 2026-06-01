@@ -50,6 +50,8 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
     window.print();
   };
 
+
+
   return (
     <div className="p-6 md:p-10 space-y-8 mx-auto">
       {/* Header */}
@@ -294,7 +296,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
                       className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
                     >
                       <Download className="w-4 h-4" />
-                      Download KRA Receipt
+                      View KRA Receipt
                     </a>
                   </div>
                 )}
