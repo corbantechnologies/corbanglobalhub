@@ -53,7 +53,7 @@ export default function Navbar() {
     },
     {
       name: "Billings",
-      href: "/admin/hubbillinginvoices",
+      href: "/admin/billings",
       icon: FileText,
       show: isSuperuser,
     },

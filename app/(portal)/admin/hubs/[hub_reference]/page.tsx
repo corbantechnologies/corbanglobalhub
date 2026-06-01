@@ -2,7 +2,8 @@
 
 import { useFetchHub } from "@/hooks/hubs/actions";
 import { useFetchHubServices } from "@/hooks/hubservices/actions";
-import { ArrowLeft, Loader2, Server, FolderKanban, Activity, CheckCircle2, XCircle, Building2, MapPin, Receipt, Mail, DollarSign, Plus, Search } from "lucide-react";
+import { useFetchHubBillingInvoices } from "@/hooks/hubbillinginvoices/actions";
+import { ArrowLeft, Loader2, Server, FolderKanban, Activity, CheckCircle2, XCircle, Building2, MapPin, Receipt, Mail, DollarSign, Plus, Search, FileText } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { use, useState } from "react";
@@ -13,16 +14,19 @@ export default function HubDetailPage({ params }: { params: Promise<{ hub_refere
   const { hub_reference } = use(params);
   const { data: hub, isLoading: loadingHub } = useFetchHub(hub_reference);
   const { data: services, isLoading: loadingServices } = useFetchHubServices();
+  const { data: allInvoices, isLoading: loadingInvoices } = useFetchHubBillingInvoices();
 
   const [isCreateProjectOpen, setIsCreateProjectOpen] = useState(false);
   const [searchProject, setSearchProject] = useState("");
 
-  const isLoading = loadingHub || loadingServices;
+  const isLoading = loadingHub || loadingServices || loadingInvoices;
 
   const filteredProjects = hub?.hubprojects?.filter(project => 
     project.name.toLowerCase().includes(searchProject.toLowerCase()) ||
     project.code.toLowerCase().includes(searchProject.toLowerCase())
   );
+  
+  const hubInvoices = allInvoices?.filter(i => i.hub_details?.reference === hub_reference || i.hub === hub?.name);
 
   if (isLoading) {
     return (
@@ -185,6 +189,59 @@ export default function HubDetailPage({ params }: { params: Promise<{ hub_refere
               ))}
             </div>
           )}
+
+          {/* Hub Invoices Section */}
+          <div className="pt-6 border-t border-slate-200">
+            <h2 className="text-xl font-bold text-slate-900 mb-6">Billing Invoices</h2>
+            {!hubInvoices || hubInvoices.length === 0 ? (
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 flex flex-col items-center justify-center text-center">
+                <FileText className="w-10 h-10 text-slate-300 mb-3" />
+                <h3 className="text-sm font-medium text-slate-900">No Invoices</h3>
+                <p className="text-xs text-slate-500 mt-1">This hub has not been billed yet.</p>
+              </div>
+            ) : (
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-100 text-xs uppercase tracking-wider text-slate-500 font-semibold">
+                      <th className="px-6 py-4">Invoice</th>
+                      <th className="px-6 py-4">Billing Month</th>
+                      <th className="px-6 py-4 text-right">Amount</th>
+                      <th className="px-6 py-4 text-center">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {hubInvoices.map((invoice) => (
+                      <tr key={invoice.reference} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="px-6 py-4">
+                          <Link href={`/admin/billings/${invoice.reference}`} className="font-semibold text-slate-900 hover:text-blue-600 transition-colors">
+                            {invoice.code}
+                          </Link>
+                          <p className="text-xs text-slate-500 mt-1">Issued: {new Date(invoice.created_at).toLocaleDateString()}</p>
+                        </td>
+                        <td className="px-6 py-4 text-slate-600">
+                          {new Date(invoice.billing_month).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}
+                        </td>
+                        <td className="px-6 py-4 text-right font-medium text-slate-900">
+                          {parseFloat(invoice.total_amount).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={cn(
+                            "text-[11px] font-semibold px-2 py-0.5 rounded-full border",
+                            invoice.status.toLowerCase() === "paid" ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                            invoice.status.toLowerCase() === "overdue" ? "bg-red-50 text-red-700 border-red-200" :
+                            "bg-amber-50 text-amber-700 border-amber-200"
+                          )}>
+                            {invoice.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Hub Information Sidebar */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { apiActions } from "@/tools/axios";
+import { apiActions, apiMultipartActions } from "@/tools/axios";
 import { AxiosResponse } from "axios";
 import { PaginatedResponse } from "./general";
 import { HubBillingInvoiceLine } from "./hubbillinginvoicelines";
@@ -34,8 +34,8 @@ interface updateHubBillingInvoice {
     status?: string;
 }
 
-export const getHubBillingInvoices = async (headers: { headers: { Authorization: string } }): Promise<HubBillingInvoice[]> => {
-    const response: AxiosResponse<PaginatedResponse<HubBillingInvoice>> = await apiActions.get(`/api/v1/hubbillinginvoices/`, headers);
+export const getHubBillingInvoices = async (headers: { headers: { Authorization: string } }, params?: any): Promise<HubBillingInvoice[]> => {
+    const response: AxiosResponse<PaginatedResponse<HubBillingInvoice>> = await apiActions.get(`/api/v1/hubbillinginvoices/`, { ...headers, params });
     return response.data.results || [];
 };
 
@@ -45,7 +45,7 @@ export const getHubBillingInvoice = async (reference: string, headers: { headers
 };
 
 
-export const updateHubBillingInvoice = async (reference: string, data: updateHubBillingInvoice, headers: { headers: { Authorization: string } }): Promise<HubBillingInvoice> => {
-    const response: AxiosResponse<HubBillingInvoice> = await apiActions.patch(`/api/v1/hubbillinginvoices/${reference}/`, data, headers);
+export const updateHubBillingInvoice = async (reference: string, data: FormData, headers: { headers: { Authorization: string } }): Promise<HubBillingInvoice> => {
+    const response: AxiosResponse<HubBillingInvoice> = await apiMultipartActions.patch(`/api/v1/hubbillinginvoices/${reference}/`, data, headers);
     return response.data;
 };
