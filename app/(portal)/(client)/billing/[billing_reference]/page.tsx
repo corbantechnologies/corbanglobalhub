@@ -2,13 +2,19 @@
 
 import { use } from "react";
 import { useFetchHubBillingInvoice } from "@/hooks/hubbillinginvoices/actions";
-import { ArrowLeft, Loader2, FileText, CheckCircle2, XCircle, Download, ExternalLink, Printer, Receipt } from "lucide-react";
+import { useFetchActiveCompanyProfile } from "@/hooks/companyprofile/actions";
+import { useFetchPaymentAccounts } from "@/hooks/paymentaccounts/actions";
+import { ArrowLeft, Loader2, FileText, CheckCircle2, XCircle, Download, ExternalLink, Printer, Receipt, Building2, Landmark, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ billing_reference: string }> }) {
   const { billing_reference } = use(params);
-  const { data: invoice, isLoading } = useFetchHubBillingInvoice(billing_reference);
+  const { data: invoice, isLoading: loadingInvoice } = useFetchHubBillingInvoice(billing_reference);
+  const { data: company, isLoading: loadingCompany } = useFetchActiveCompanyProfile();
+  const { data: paymentAccounts, isLoading: loadingAccounts } = useFetchPaymentAccounts();
+
+  const isLoading = loadingInvoice || loadingCompany || loadingAccounts;
 
   if (isLoading) {
     return (
@@ -86,15 +92,47 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 border-b border-slate-100 pb-8">
           <div>
             <h2 className="text-3xl font-bold text-slate-900 mb-2">INVOICE</h2>
-            <p className="text-slate-500 mb-1">Code: <span className="font-mono text-slate-900">{invoice.code}</span></p>
-            <p className="text-slate-500">
-              Billing Cycle: <span className="font-semibold text-slate-900">
-                {new Date(invoice.billing_month).toLocaleDateString(undefined, {
-                  month: 'long',
-                  year: 'numeric'
-                })}
-              </span>
-            </p>
+            <div className="mb-6 pb-4 border-b border-slate-100">
+              <p className="text-slate-500 mb-1">Code: <span className="font-mono text-slate-900">{invoice.code}</span></p>
+              <p className="text-slate-500">
+                Billing Cycle: <span className="font-semibold text-slate-900">
+                  {new Date(invoice.billing_month).toLocaleDateString(undefined, {
+                    month: 'long',
+                    year: 'numeric'
+                  })}
+                </span>
+              </p>
+            </div>
+
+            {company ? (
+              <div className="space-y-1">
+                {company.logo_url && (
+                  <img src={company.logo_url} alt={company.name} className="h-10 w-auto object-contain mb-3" />
+                )}
+                {company.name && <p className="font-semibold text-slate-900">{company.name}</p>}
+                
+                {[company.address, company.city, company.country].filter(Boolean).length > 0 && (
+                  <p className="text-sm text-slate-600">
+                    {[company.address, company.city, company.country].filter(Boolean).join(', ')}
+                  </p>
+                )}
+                
+                {[company.email && `Email: ${company.email}`, company.phone && `Phone: ${company.phone}`].filter(Boolean).length > 0 && (
+                  <p className="text-sm text-slate-600">
+                    {[company.email && `Email: ${company.email}`, company.phone && `Phone: ${company.phone}`].filter(Boolean).join(' | ')}
+                  </p>
+                )}
+                
+                {company.tax_pin && (
+                  <p className="text-sm text-slate-600">Tax PIN: <span className="font-mono">{company.tax_pin}</span></p>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-1">
+                <p className="font-semibold text-slate-900">Corban Technologies Ltd</p>
+                <p className="text-sm text-slate-600">Generating dynamic company profile...</p>
+              </div>
+            )}
           </div>
           
           <div className="text-left md:text-right">
@@ -195,9 +233,40 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
             </div>
             
             {invoice.status.toLowerCase() !== "paid" && (
-              <div className="bg-blue-50 text-blue-800 p-4 rounded-lg text-sm print:hidden">
-                <p className="font-medium mb-1">How to pay</p>
-                <p>Please remit payment to Corban Technologies Ltd bank account. Contact billing support if you need assistance.</p>
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm print:hidden">
+                <p className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                  <Landmark className="w-4 h-4 text-slate-500" />
+                  Payment Methods
+                </p>
+                
+                {paymentAccounts && paymentAccounts.length > 0 ? (
+                  <div className="space-y-4">
+                    {paymentAccounts.filter(acc => acc.is_active).map(acc => (
+                      <div key={acc.reference} className="bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
+                        <p className="font-semibold text-slate-800 mb-1">{acc.name}</p>
+                        {acc.bank_name ? (
+                          <div className="text-slate-600 text-xs space-y-1">
+                            <p>Bank: <span className="font-medium text-slate-900">{acc.bank_name}</span> (Branch: {acc.branch})</p>
+                             <p>Account Name: <span className="font-mono font-medium text-slate-900">{acc.name}</span></p>
+                            <p>Account Number: <span className="font-mono font-medium text-slate-900">{acc.account_number}</span></p>
+                            {acc.swift_code && <p>SWIFT Code: <span className="font-mono">{acc.swift_code}</span></p>}
+                          </div>
+                        ) : acc.paybill ? (
+                          <div className="text-slate-600 text-xs space-y-1">
+                            <p className="flex items-center gap-1.5"><Smartphone className="w-3.5 h-3.5 text-emerald-500" /> M-PESA Paybill</p>
+                            <p>Paybill Number: <span className="font-mono font-medium text-slate-900">{acc.paybill}</span></p>
+                            <p>Account Number: <span className="font-mono font-medium text-slate-900">{acc.account}</span></p>
+                          </div>
+                        ) : null}
+                        {acc.instructions && (
+                          <p className="text-xs text-slate-500 mt-2 italic">{acc.instructions}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-slate-600 text-sm">Please contact billing support to get payment instructions.</p>
+                )}
               </div>
             )}
           </div>

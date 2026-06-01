@@ -25,14 +25,14 @@ export interface CompanyProfile {
 
 export const getCompanyProfile = async (): Promise<CompanyProfile> => {
     const response: AxiosResponse<CompanyProfile> = await apiActions.get(
-        `/api/v1/companyprofile/`
+        `/api/v1/companyprofiles/`
     );
     return response.data;
 };
 
 export const getActiveCompanyProfile = async (): Promise<CompanyProfile> => {
     const response: AxiosResponse<CompanyProfile> = await apiActions.get(
-        `/api/v1/companyprofile/active/`
+        `/api/v1/companyprofiles/active/`
     );
     return response.data;
 };
