@@ -10,6 +10,7 @@ export interface PaymentAccount {
     name: string;
     bank_name: string;
     branch: string;
+    account_name: string;
     account_number: string;
     swift_code: string;
     // MPESA

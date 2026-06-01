@@ -286,7 +286,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
                         {acc.bank_name ? (
                           <div className="text-slate-600 text-xs space-y-1">
                             <p>Bank: <span className="font-medium text-slate-900">{acc.bank_name}</span> (Branch: {acc.branch})</p>
-                             <p>Account Name: <span className="font-mono font-medium text-slate-900">{acc.name}</span></p>
+                             <p>Account Name: <span className="font-mono font-medium text-slate-900">{acc.account_name}</span></p>
                             <p>Account Number: <span className="font-mono font-medium text-slate-900">{acc.account_number}</span></p>
                             {acc.swift_code && <p>SWIFT Code: <span className="font-mono">{acc.swift_code}</span></p>}
                           </div>
