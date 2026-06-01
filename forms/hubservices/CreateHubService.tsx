@@ -39,6 +39,7 @@ export default function CreateHubServiceForm({ onSuccess, onCancel }: CreateHubS
     onSuccess: () => {
       toast.success("Service created successfully");
       queryClient.invalidateQueries({ queryKey: ["hubservices"] });
+      formik.resetForm();
       onSuccess();
     },
     onError: (error: any) => {
