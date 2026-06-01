@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { CheckCircle2, XCircle, Receipt, Landmark, Smartphone } from "lucide-react";
+import { CheckCircle2, XCircle, Receipt, Landmark, Smartphone, ExternalLink } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Interfaces to type the response
@@ -284,7 +284,7 @@ export default async function PrintInvoicePage({
             )}
           </div>
 
-          {(invoice.kra_cu_invoice_number) && (
+          {(invoice.kra_cu_invoice_number || invoice.kra_receipt) && (
             <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 w-full md:w-80">
               <h4 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-slate-400" />
@@ -295,6 +295,20 @@ export default async function PrintInvoicePage({
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">CU Invoice Number</p>
                     <p className="font-mono text-sm text-slate-900 bg-white px-2 py-1 border border-slate-200 rounded">{invoice.kra_cu_invoice_number}</p>
+                  </div>
+                )}
+                {invoice.kra_receipt && (
+                  <div>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1 mt-3">KRA Receipt Document</p>
+                    <a 
+                      href={invoice.kra_receipt} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium bg-blue-50 px-3 py-1.5 rounded-md border border-blue-100"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      View Official Receipt
+                    </a>
                   </div>
                 )}
               </div>
