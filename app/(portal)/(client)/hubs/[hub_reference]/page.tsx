@@ -3,7 +3,7 @@
 import { useFetchHub } from "@/hooks/hubs/actions";
 import { useFetchHubServices } from "@/hooks/hubservices/actions";
 import { useFetchHubBillingInvoices } from "@/hooks/hubbillinginvoices/actions";
-import { ArrowLeft, Loader2, Server, FolderKanban, Activity, CheckCircle2, XCircle, Building2, MapPin, Receipt, Mail, DollarSign, Search, Edit2, FileText } from "lucide-react";
+import { ArrowLeft, Loader2, Server, FolderKanban, Activity, CheckCircle2, XCircle, Building2, MapPin, Receipt, Mail, Search, Edit2, FileText } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { use, useState } from "react";
@@ -168,7 +168,7 @@ export default function ClientHubDetailPage({ params }: { params: Promise<{ hub_
                                   <div className="flex flex-col items-end">
                                     <span className="font-medium text-slate-900 flex items-center gap-1">
                                       {hasCustomPrice ? (
-                                        <><DollarSign className="w-3.5 h-3.5 text-slate-400" /> {sub.custom_price}</>
+                                        <>{fullService ? fullService.currency : ""} {sub.custom_price}</>
                                       ) : (
                                         fullService ? `${fullService.currency} ${fullService.base_price}` : "Standard"
                                       )}
