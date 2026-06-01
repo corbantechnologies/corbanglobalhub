@@ -20,10 +20,16 @@ export interface HubBillingInvoice {
     lines: HubBillingInvoiceLine[];
 }
 
+// STATUS_CHOICES = [
+//         ("Unpaid", "Unpaid"),
+//         ("Paid", "Paid"),
+//         ("Overdue", "Overdue"),
+//     ]
 
 interface updateHubBillingInvoice {
     kra_receipt?: File | null;
     kra_cu_invoice_number?: string;
+    status?: string;
 }
 
 export const getHubBillingInvoices = async (headers: { headers: { Authorization: string } }): Promise<HubBillingInvoice[]> => {
