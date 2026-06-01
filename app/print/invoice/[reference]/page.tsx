@@ -1,41 +1,90 @@
-"use client";
-
-import { use, useState } from "react";
-import { useFetchHubBillingInvoice } from "@/hooks/hubbillinginvoices/actions";
-import { useFetchActiveCompanyProfile } from "@/hooks/companyprofile/actions";
-import { useFetchPaymentAccounts } from "@/hooks/paymentaccounts/actions";
-import useAxiosAuth from "@/hooks/authentication/useAxiosAuth";
-import { ArrowLeft, Loader2, FileText, CheckCircle2, XCircle, Download, ExternalLink, Printer, Receipt, Building2, Landmark, Smartphone } from "lucide-react";
-import Link from "next/link";
+import { notFound } from "next/navigation";
+import { CheckCircle2, XCircle, Receipt, Landmark, Smartphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ billing_reference: string }> }) {
-  const { billing_reference } = use(params);
-  const { data: invoice, isLoading: loadingInvoice } = useFetchHubBillingInvoice(billing_reference);
-  const { data: company, isLoading: loadingCompany } = useFetchActiveCompanyProfile();
-  const { data: paymentAccounts, isLoading: loadingAccounts } = useFetchPaymentAccounts();
-  const header = useAxiosAuth();
-  const [isDownloading, setIsDownloading] = useState(false);
+// Interfaces to type the response
+interface HubBillingInvoice {
+    hub: string;
+    billing_month: string;
+    total_amount: string;
+    status: string;
+    kra_receipt: string;
+    kra_cu_invoice_number: string;
+    code: string;
+    created_at: string;
+    reference: string;
+    lines: {
+      service_name: string;
+      project_name: string;
+      amount: string;
+      reference: string;
+    }[];
+    hub_details: {
+      name: string;
+      billing_address: string;
+      tax_pin: string;
+    };
+}
 
-  const isLoading = loadingInvoice || loadingCompany || loadingAccounts;
+interface CompanyProfile {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    country: string;
+    tax_pin: string;
+    logo_url: string;
+}
 
-  if (isLoading) {
+interface PaymentAccount {
+    name: string;
+    bank_name: string;
+    branch: string;
+    account_number: string;
+    swift_code: string;
+    paybill: string;
+    instructions: string;
+    reference: string;
+    is_active: boolean;
+}
+
+interface PrintData {
+  invoice: HubBillingInvoice;
+  company: CompanyProfile | null;
+  payment_accounts: PaymentAccount[];
+}
+
+export default async function PrintInvoicePage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ reference: string }>;
+  searchParams: Promise<{ token?: string }>;
+}) {
+  const { reference } = await params;
+  const { token } = await searchParams;
+
+  if (!token) {
+    return <div className="p-10 font-bold text-red-500">Access Denied: Missing Token</div>;
+  }
+
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  
+  const res = await fetch(`${baseUrl}/api/v1/hubbillinginvoices/${reference}/print_data/?token=${token}`, {
+    cache: 'no-store'
+  });
+
+  if (!res.ok) {
     return (
-      <div className="flex items-center justify-center min-h-[500px]">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+      <div className="p-10 font-bold text-red-500">
+        Failed to load invoice or invalid token.
       </div>
     );
   }
 
-  if (!invoice) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[500px] text-slate-500">
-        <FileText className="w-12 h-12 mb-4 opacity-20" />
-        <p className="text-lg font-medium text-slate-900">Invoice not found</p>
-        <Link href="/billing" className="text-blue-600 hover:underline mt-2">Return to Billing</Link>
-      </div>
-    );
-  }
+  const data: PrintData = await res.json();
+  const { invoice, company, payment_accounts: paymentAccounts } = data;
 
   const getStatusBadge = (status: string) => {
     switch (status.toLowerCase()) {
@@ -49,84 +98,10 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
     }
   };
 
-  const handleDownloadInvoice = async () => {
-    if (!invoice?.reference) return;
-    
-    try {
-      setIsDownloading(true);
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-      
-      const response = await fetch(`${baseUrl}/api/v1/hubbillinginvoices/${invoice.reference}/download/`, {
-        headers: {
-          ...header.headers,
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to download invoice");
-      }
-      
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Invoice_${invoice.code}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      console.error("Failed to download PDF:", error);
-      alert("There was an error downloading the PDF. Please try again.");
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
+  // Render the exact same document layout but without headers, navs, or print buttons.
   return (
-    <div className="p-6 md:p-10 space-y-8 mx-auto">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
-        <div className="flex items-center gap-4">
-          <Link 
-            href="/billing"
-            className="p-2 hover:bg-white rounded-lg border border-transparent hover:border-slate-200 transition-colors text-slate-500 hover:text-slate-900"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Invoice {invoice.code}</h1>
-              <span className={cn(
-                "text-xs font-semibold px-2.5 py-1 rounded-full border",
-                getStatusBadge(invoice.status)
-              )}>
-                {invoice.status}
-              </span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <button
-            onClick={handleDownloadInvoice}
-            disabled={isDownloading}
-            className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white border border-transparent rounded-lg text-sm font-medium hover:bg-slate-800 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
-          >
-            {isDownloading ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <Download className="w-4 h-4" />
-            )}
-            {isDownloading ? "Generating PDF..." : "Download PDF"}
-          </button>
-        </div>
-      </div>
-
-      {/* Invoice Document (Printable Area) */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 md:p-12 print:border-none print:shadow-none print:p-0">
-        
+    <div className="bg-white min-h-screen text-slate-900 font-sans p-10 max-w-5xl mx-auto">
+      <div className="bg-white p-2">
         {/* Invoice Header details */}
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 border-b border-slate-100 pb-8">
           <div>
@@ -169,7 +144,6 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
             ) : (
               <div className="space-y-1">
                 <p className="font-semibold text-slate-900">Corban Technologies Ltd</p>
-                <p className="text-sm text-slate-600">Generating dynamic company profile...</p>
               </div>
             )}
           </div>
@@ -201,7 +175,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
         <div className="py-8">
           <h3 className="text-lg font-semibold text-slate-900 mb-4">Itemized Services</h3>
           
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
+          <div className="overflow-hidden rounded-lg border border-slate-200">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="bg-slate-50 border-b border-slate-200 text-slate-600">
@@ -213,7 +187,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
               <tbody className="divide-y divide-slate-100">
                 {invoice.lines && invoice.lines.length > 0 ? (
                   invoice.lines.map((line) => (
-                    <tr key={line.reference} className="hover:bg-slate-50/50">
+                    <tr key={line.reference}>
                       <td className="px-6 py-4">
                         <p className="font-medium text-slate-900">{line.service_name}</p>
                       </td>
@@ -251,7 +225,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
           </div>
         </div>
 
-        {/* KRA Details & Footer */}
+        {/* Payment Methods & Footer */}
         <div className="flex flex-col md:flex-row justify-between items-start gap-8 pt-6 border-t border-slate-100">
           <div className="space-y-4 flex-1 w-full max-w-2xl">
             <div>
@@ -272,7 +246,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
             </div>
             
             {invoice.status.toLowerCase() !== "paid" && (
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm print:hidden">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm">
                 <p className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
                   <Landmark className="w-4 h-4 text-slate-500" />
                   Payment Methods
@@ -310,7 +284,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
             )}
           </div>
 
-          {(invoice.kra_cu_invoice_number || invoice.kra_receipt) && (
+          {(invoice.kra_cu_invoice_number) && (
             <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 w-full md:w-80">
               <h4 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-slate-400" />
@@ -321,20 +295,6 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">CU Invoice Number</p>
                     <p className="font-mono text-sm text-slate-900 bg-white px-2 py-1 border border-slate-200 rounded">{invoice.kra_cu_invoice_number}</p>
-                  </div>
-                )}
-                
-                {invoice.kra_receipt && (
-                  <div className="pt-2 print:hidden">
-                    <a 
-                      href={invoice.kra_receipt} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
-                    >
-                      <Download className="w-4 h-4" />
-                      View KRA Receipt
-                    </a>
                   </div>
                 )}
               </div>
