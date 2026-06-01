@@ -4,6 +4,7 @@ import { apiActions } from "@/tools/axios";
 import { AxiosResponse } from "axios";
 import { PaginatedResponse } from "./general";
 import { HubBillingInvoiceLine } from "./hubbillinginvoicelines";
+import { MinifiedHub } from "./hubs";
 
 export interface HubBillingInvoice {
     id: number;
@@ -18,6 +19,7 @@ export interface HubBillingInvoice {
     updated_at: string;
     reference: string;
     lines: HubBillingInvoiceLine[];
+    hub_details: MinifiedHub;
 }
 
 // STATUS_CHOICES = [

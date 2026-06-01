@@ -24,6 +24,19 @@ export interface Hub {
     hub_invoices: HubBillingInvoice[];
 }
 
+export interface MinifiedHub {
+    code: string;
+    name: string;
+    country: string;
+    owner: string;
+    billing_address: string;
+    billing_email: string;
+    requires_kra_invoice: boolean;
+    tax_pin: string;
+    reference: string;
+}
+
+
 interface createHub {
     name: string;
     country: string;

@@ -99,8 +99,22 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
           
           <div className="text-left md:text-right">
             <p className="text-sm font-semibold text-slate-900 mb-1">Billed To</p>
-            <p className="text-lg text-slate-700 font-medium">{invoice.hub}</p>
-            <p className="text-sm text-slate-500 mt-2">
+            {invoice.hub_details ? (
+              <div className="space-y-1">
+                <p className="text-lg text-slate-700 font-medium">
+                  {invoice.hub_details.name}
+                </p>
+                <p className="text-sm text-slate-600 max-w-xs ml-auto">
+                  {invoice.hub_details.billing_address}
+                </p>
+                <p className="text-sm text-slate-600">
+                  Tax PIN: <span className="font-mono">{invoice.hub_details.tax_pin}</span>
+                </p>
+              </div>
+            ) : (
+              <p className="text-lg text-slate-700 font-medium">{invoice.hub}</p>
+            )}
+            <p className="text-sm text-slate-500 mt-3">
               Issued: {new Date(invoice.created_at).toLocaleDateString()}
             </p>
           </div>
