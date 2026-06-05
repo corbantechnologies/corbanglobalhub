@@ -8,6 +8,7 @@ import useAxiosAuth from "@/hooks/authentication/useAxiosAuth";
 import { ArrowLeft, Loader2, FileText, CheckCircle2, XCircle, Download, ExternalLink, Printer, Receipt, Building2, Landmark, Smartphone } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import toast from "react-hot-toast";
 
 export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ billing_reference: string }> }) {
   const { billing_reference } = use(params);
@@ -54,7 +55,7 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
     
     try {
       setIsDownloading(true);
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       
       const response = await fetch(`${baseUrl}/api/v1/hubbillinginvoices/${invoice.reference}/download/`, {
         headers: {
@@ -77,8 +78,8 @@ export default function ClientInvoiceDetailPage({ params }: { params: Promise<{ 
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error("Failed to download PDF:", error);
-      alert("There was an error downloading the PDF. Please try again.");
+      console.log("Failed to download PDF:", error);
+      toast.error("There was an error downloading the PDF. Please try again.");
     } finally {
       setIsDownloading(false);
     }
