@@ -138,16 +138,49 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
       </div>
 
       {/* Invoice Document (Printable Area) */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 md:p-12 print:border-none print:shadow-none print:p-0">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 md:p-12 print:border-none print:shadow-none print:p-0 print:max-w-3xl print:mx-auto">
         
-        {/* Invoice Header details */}
-        <div className="flex flex-col md:flex-row justify-between items-start gap-8 border-b border-slate-100 pb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-slate-900 mb-2">INVOICE</h2>
-            <div className="mb-6 pb-4 border-b border-slate-100">
-              <p className="text-slate-500 mb-1">Code: <span className="font-mono text-slate-900">{invoice.code}</span></p>
-              <p className="text-slate-500">
-                Billing Cycle: <span className="font-semibold text-slate-900">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-10">
+          {/* Company Details (Left) */}
+          <div className="space-y-4">
+            {company ? (
+              <>
+                {company.logo_url && (
+                  <img src={company.logo_url} alt={company.name} className="h-14 w-auto object-contain" />
+                )}
+                <div className="space-y-1">
+                  {company.name && <p className="font-bold text-slate-900 text-lg">{company.name}</p>}
+                  {[company.address, company.city, company.country].filter(Boolean).length > 0 && (
+                    <p className="text-sm text-slate-600">
+                      {[company.address, company.city, company.country].filter(Boolean).join(', ')}
+                    </p>
+                  )}
+                  {[company.email && `${company.email}`, company.phone && `${company.phone}`].filter(Boolean).length > 0 && (
+                    <p className="text-sm text-slate-600">
+                      {[company.email && `${company.email}`, company.phone && `${company.phone}`].filter(Boolean).join(' | ')}
+                    </p>
+                  )}
+                  {company.tax_pin && (
+                    <p className="text-sm text-slate-600">Tax PIN: <span className="font-mono">{company.tax_pin}</span></p>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="space-y-1">
+                <p className="font-bold text-slate-900 text-lg">Corban Technologies Ltd</p>
+              </div>
+            )}
+          </div>
+          
+          {/* Invoice Details (Right) */}
+          <div className="text-left md:text-right">
+            <h2 className="text-4xl font-black text-slate-900 tracking-tight mb-2 uppercase">Invoice</h2>
+            <div className="space-y-1 mt-4">
+              <p className="text-sm text-slate-500">Invoice Number: <span className="font-mono font-medium text-slate-900">{invoice.code}</span></p>
+              <p className="text-sm text-slate-500">Date of Issue: <span className="font-medium text-slate-900">{new Date(invoice.created_at).toLocaleDateString()}</span></p>
+              <p className="text-sm text-slate-500">
+                Billing Cycle: <span className="font-medium text-slate-900">
                   {new Date(invoice.billing_month).toLocaleDateString(undefined, {
                     month: 'long',
                     year: 'numeric'
@@ -155,77 +188,55 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
                 </span>
               </p>
             </div>
-
-            {company ? (
-              <div className="space-y-1">
-                {company.logo_url && (
-                  <img src={company.logo_url} alt={company.name} className="h-10 w-auto object-contain mb-3" />
-                )}
-                {company.name && <p className="font-semibold text-slate-900">{company.name}</p>}
-                
-                {[company.address, company.city, company.country].filter(Boolean).length > 0 && (
-                  <p className="text-sm text-slate-600">
-                    {[company.address, company.city, company.country].filter(Boolean).join(', ')}
-                  </p>
-                )}
-                
-                {[company.email && `Email: ${company.email}`, company.phone && `Phone: ${company.phone}`].filter(Boolean).length > 0 && (
-                  <p className="text-sm text-slate-600">
-                    {[company.email && `Email: ${company.email}`, company.phone && `Phone: ${company.phone}`].filter(Boolean).join(' | ')}
-                  </p>
-                )}
-                
-                {company.tax_pin && (
-                  <p className="text-sm text-slate-600">Tax PIN: <span className="font-mono">{company.tax_pin}</span></p>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-1">
-                <p className="font-semibold text-slate-900">Corban Technologies Ltd</p>
-              </div>
-            )}
           </div>
-          
-          <div className="text-left md:text-right">
-            <p className="text-sm font-semibold text-slate-900 mb-1">Billed To</p>
+        </div>
+
+        {/* Billed To & Amount Due */}
+        <div className="flex flex-col md:flex-row justify-between items-end gap-8 pb-8 border-b border-slate-200 mb-10">
+          <div className="space-y-3">
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Billed To</p>
             {invoice.hub_details ? (
               <div className="space-y-1">
-                <p className="text-lg text-slate-700 font-medium">
+                <p className="text-xl text-slate-900 font-bold">
                   {invoice.hub_details.name}
                 </p>
-                <p className="text-sm text-slate-600 max-w-xs ml-auto">
+                <p className="text-sm text-slate-600 max-w-sm">
                   {invoice.hub_details.billing_address}
                 </p>
                 <p className="text-sm text-slate-600">
-                  Tax PIN: <span className="font-mono">{invoice.hub_details.tax_pin}</span>
+                  Tax PIN: <span className="font-mono text-slate-900">{invoice.hub_details.tax_pin}</span>
                 </p>
               </div>
             ) : (
-              <p className="text-lg text-slate-700 font-medium">{invoice.hub}</p>
+              <p className="text-xl text-slate-900 font-bold">{invoice.hub}</p>
             )}
-            <p className="text-sm text-slate-500 mt-3">
-              Issued: {new Date(invoice.created_at).toLocaleDateString()}
-            </p>
+          </div>
+          <div className="text-left md:text-right space-y-2 bg-slate-50 p-5 rounded-xl border border-slate-100 min-w-[240px] print:border-slate-200">
+             <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Amount Due</p>
+             <p className="text-3xl font-bold text-slate-900">
+               KES {parseFloat(invoice.total_amount).toLocaleString('en-US', {
+                 minimumFractionDigits: 2,
+                 maximumFractionDigits: 2
+               })}
+             </p>
           </div>
         </div>
 
         {/* Invoice Lines */}
-        <div className="py-8">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Itemized Services</h3>
-          
-          <div className="overflow-x-auto rounded-lg border border-slate-200">
+        <div className="mb-10">
+          <div className="overflow-hidden rounded-xl border border-slate-200">
             <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="bg-slate-50 border-b border-slate-200 text-slate-600">
-                  <th className="px-6 py-4 font-semibold">Service</th>
-                  <th className="px-6 py-4 font-semibold">Project</th>
-                  <th className="px-6 py-4 font-semibold text-right">Amount (KES)</th>
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Service</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Project</th>
+                  <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Amount (KES)</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 bg-white">
                 {invoice.lines && invoice.lines.length > 0 ? (
                   invoice.lines.map((line) => (
-                    <tr key={line.reference} className="hover:bg-slate-50/50">
+                    <tr key={line.reference} className="hover:bg-slate-50/50 transition-colors">
                       <td className="px-6 py-4">
                         <p className="font-medium text-slate-900">{line.service_name}</p>
                       </td>
@@ -250,7 +261,7 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
               </tbody>
               <tfoot className="bg-slate-50 border-t border-slate-200">
                 <tr>
-                  <td colSpan={2} className="px-6 py-4 text-right font-bold text-slate-900">Total Amount</td>
+                  <td colSpan={2} className="px-6 py-4 text-right font-bold text-slate-900 uppercase text-xs tracking-wider">Total Amount</td>
                   <td className="px-6 py-4 text-right font-bold text-slate-900 text-lg">
                     KES {parseFloat(invoice.total_amount).toLocaleString('en-US', {
                       minimumFractionDigits: 2,
@@ -263,29 +274,30 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
           </div>
         </div>
 
-        {/* KRA Details & Footer */}
-        <div className="flex flex-col md:flex-row justify-between items-start gap-8 pt-6 border-t border-slate-100">
-          <div className="space-y-4 flex-1 w-full max-w-2xl">
+        {/* Footer: KRA Details & Payment Status */}
+        <div className="flex flex-col md:flex-row justify-between items-start gap-8 print:break-inside-avoid">
+          {/* Payment Status & Instructions */}
+          <div className="space-y-6 flex-1 w-full max-w-2xl">
             <div>
-              <h4 className="text-sm font-semibold text-slate-900 mb-2">Payment Status</h4>
+              <h4 className="text-sm font-bold text-slate-900 mb-3 uppercase tracking-wider">Payment Status</h4>
               <div className="flex items-center gap-2">
                 {invoice.status.toLowerCase() === "paid" ? (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                  <CheckCircle2 className="w-6 h-6 text-emerald-500" />
                 ) : (
-                  <XCircle className="w-5 h-5 text-amber-500" />
+                  <XCircle className="w-6 h-6 text-amber-500" />
                 )}
                 <span className={cn(
-                  "font-medium",
+                  "font-bold text-lg",
                   invoice.status.toLowerCase() === "paid" ? "text-emerald-700" : "text-amber-700"
                 )}>
-                  {invoice.status}
+                  {invoice.status.toUpperCase()}
                 </span>
               </div>
             </div>
             
             {invoice.status.toLowerCase() !== "paid" && (
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-sm print:hidden">
-                <p className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <div className="bg-slate-50 p-5 rounded-xl border border-slate-200 text-sm print:hidden">
+                <p className="font-bold text-slate-900 mb-4 flex items-center gap-2 uppercase tracking-wider text-xs">
                   <Landmark className="w-4 h-4 text-slate-500" />
                   Payment Methods
                 </p>
@@ -293,24 +305,24 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
                 {paymentAccounts && paymentAccounts.length > 0 ? (
                   <div className="space-y-4">
                     {paymentAccounts.filter(acc => acc.is_active).map(acc => (
-                      <div key={acc.reference} className="bg-white p-3 rounded-lg border border-slate-100 shadow-sm">
-                        <p className="font-semibold text-slate-800 mb-1">{acc.name}</p>
+                      <div key={acc.reference} className="bg-white p-4 rounded-lg border border-slate-100 shadow-sm">
+                        <p className="font-bold text-slate-800 mb-2">{acc.name}</p>
                         {acc.bank_name ? (
-                          <div className="text-slate-600 text-xs space-y-1">
+                          <div className="text-slate-600 text-sm space-y-1.5">
                             <p>Bank: <span className="font-medium text-slate-900">{acc.bank_name}</span> (Branch: {acc.branch})</p>
-                             <p>Account Name: <span className="font-mono font-medium text-slate-900">{acc.name}</span></p>
+                            <p>Account Name: <span className="font-mono font-medium text-slate-900">{acc.name}</span></p>
                             <p>Account Number: <span className="font-mono font-medium text-slate-900">{acc.account_number}</span></p>
                             {acc.swift_code && <p>SWIFT Code: <span className="font-mono">{acc.swift_code}</span></p>}
                           </div>
                         ) : acc.paybill ? (
-                          <div className="text-slate-600 text-xs space-y-1">
-                            <p className="flex items-center gap-1.5"><Smartphone className="w-3.5 h-3.5 text-emerald-500" /> M-PESA Paybill</p>
+                          <div className="text-slate-600 text-sm space-y-1.5">
+                            <p className="flex items-center gap-1.5 font-medium"><Smartphone className="w-4 h-4 text-emerald-500" /> M-PESA Paybill</p>
                             <p>Paybill Number: <span className="font-mono font-medium text-slate-900">{acc.paybill}</span></p>
                             <p>Account Number: <span className="font-mono font-medium text-slate-900">{invoice.code}</span></p>
                           </div>
                         ) : null}
                         {acc.instructions && (
-                          <p className="text-xs text-slate-500 mt-2 italic">{acc.instructions}</p>
+                          <p className="text-xs text-slate-500 mt-3 italic bg-slate-50 p-2 rounded">{acc.instructions}</p>
                         )}
                       </div>
                     ))}
@@ -322,17 +334,18 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
             )}
           </div>
 
+          {/* KRA Compliance */}
           {(invoice.kra_cu_invoice_number || invoice.kra_receipt) && (
             <div className="bg-slate-50 p-6 rounded-xl border border-slate-200 w-full md:w-80">
-              <h4 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+              <h4 className="text-xs font-bold text-slate-900 mb-4 flex items-center gap-2 uppercase tracking-wider">
                 <Receipt className="w-4 h-4 text-slate-400" />
                 KRA Compliance Details
               </h4>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {invoice.kra_cu_invoice_number && (
                   <div>
-                    <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">CU Invoice Number</p>
-                    <p className="font-mono text-sm text-slate-900 bg-white px-2 py-1 border border-slate-200 rounded">{invoice.kra_cu_invoice_number}</p>
+                    <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1.5">CU Invoice Number</p>
+                    <p className="font-mono text-sm font-medium text-slate-900 bg-white px-3 py-2 border border-slate-200 rounded-lg shadow-sm">{invoice.kra_cu_invoice_number}</p>
                   </div>
                 )}
                 
@@ -342,7 +355,7 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
                       href={invoice.kra_receipt} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 w-full px-4 py-2 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors shadow-sm"
                     >
                       <Download className="w-4 h-4" />
                       View KRA Receipt
