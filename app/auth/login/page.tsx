@@ -168,7 +168,7 @@ export default function Login() {
       <div className="mt-8 pt-6 text-center text-sm font-medium text-slate-500 border-t border-slate-100">
         New to Corban Technologies?{" "}
         <Link
-          href="/contact"
+          href="/"
           className="text-blue-500 hover:text-blue-600 font-semibold"
         >
           Contact Support

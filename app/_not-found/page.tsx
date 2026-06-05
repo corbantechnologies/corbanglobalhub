@@ -39,7 +39,7 @@ export default function NotFound() {
             </Link>
 
             <Link
-              href="/contact"
+              href="/"
               className="flex items-center justify-center gap-2 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded px-8 py-3.5 text-base font-medium transition-colors w-full sm:w-auto"
             >
               <Mail className="w-5 h-5" />
