@@ -81,6 +81,7 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
+      console.log(error)
       toast.error("There was an error downloading the PDF. Please try again.");
     } finally {
       setIsDownloading(false);
