@@ -17,6 +17,5 @@ export const downloadPDF = async (url: string, filename: string, headers: any) =
     link.remove();
     window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
-    console.error("Download failed:", error);
   }
 };

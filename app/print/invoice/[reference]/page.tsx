@@ -69,7 +69,7 @@ export default async function PrintInvoicePage({
     return <div className="p-10 font-bold text-red-500">Access Denied: Missing Token</div>;
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://127.0.0.1:8000";
   
   const res = await fetch(`${baseUrl}/api/v1/hubbillinginvoices/${reference}/print_data/?token=${token}`, {
     cache: 'no-store'

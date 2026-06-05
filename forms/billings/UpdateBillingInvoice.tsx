@@ -54,7 +54,6 @@ export default function UpdateBillingInvoiceForm({ invoice, onSuccess, onCancel 
         
         onSuccess?.();
       } catch (error) {
-        console.error(error);
         toast.error("Failed to update invoice");
       } finally {
         setSubmitting(false);

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SlideOver } from "@/components/portal/SlideOver";
 import UpdateBillingInvoiceForm from "@/forms/billings/UpdateBillingInvoice";
+import toast from "react-hot-toast";
 
 export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ billing_reference: string }> }) {
   const { billing_reference } = use(params);
@@ -57,7 +58,7 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
     
     try {
       setIsDownloading(true);
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
       
       const response = await fetch(`${baseUrl}/api/v1/hubbillinginvoices/${invoice.reference}/download/`, {
         headers: {
@@ -80,8 +81,7 @@ export default function AdminInvoiceDetailPage({ params }: { params: Promise<{ b
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      console.error("Failed to download PDF:", error);
-      alert("There was an error downloading the PDF. Please try again.");
+      toast.error("There was an error downloading the PDF. Please try again.");
     } finally {
       setIsDownloading(false);
     }
