@@ -57,28 +57,21 @@ interface PrintData {
 
 export default async function PrintInvoicePage({
   params,
-  searchParams,
 }: {
   params: Promise<{ reference: string }>;
-  searchParams: Promise<{ token?: string }>;
 }) {
   const { reference } = await params;
-  const { token } = await searchParams;
-
-  if (!token) {
-    return <div className="p-10 font-bold text-red-500">Access Denied: Missing Token</div>;
-  }
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://127.0.0.1:8000";
   
-  const res = await fetch(`${baseUrl}/api/v1/hubbillinginvoices/${reference}/print_data/?token=${token}`, {
+  const res = await fetch(`${baseUrl}/api/v1/hubbillinginvoices/${reference}/print_data/`, {
     cache: 'no-store'
   });
 
   if (!res.ok) {
     return (
       <div className="p-10 font-bold text-red-500">
-        Failed to load invoice or invalid token.
+        Failed to load invoice or invalid reference.
       </div>
     );
   }
